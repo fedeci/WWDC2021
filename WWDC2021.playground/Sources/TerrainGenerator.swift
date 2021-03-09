@@ -33,12 +33,8 @@ class TerrainGenerator: NSObject {
         for w in 0..<width {
             for d in 0..<depth {
                 let h = noiseMap.value(at: vector_int2(w, d))
-                let vertice = SCNVector3(
-                    Float(w) * scaleFactor.x,
-                    h * scaleFactor.y,
-                    Float(d) * scaleFactor.z
-                )
-                vertices.append(vertice)
+                let vertex = SCNVector3(Float(w), h, Float(d)) * scaleFactor
+                vertices.append(vertex)
                 
                 if (d < depth - 1 && w < width - 1) {
                     indices.append(contentsOf: [counter, counter + depth + 1, counter + depth])
@@ -48,14 +44,14 @@ class TerrainGenerator: NSObject {
             }
         }
         
-        let source = SCNGeometrySource(vertices: vertices)
+        let vertexSource = SCNGeometrySource(vertices: vertices)
         let element = SCNGeometryElement(indices: indices, primitiveType: .triangles)
 
-        return SCNGeometry(sources: [source], elements: [element])
+        return SCNGeometry(sources: [vertexSource], elements: [element])
     }
     
     private func generateNoiseMap() -> GKNoiseMap {
-        let noiseSource = GKBillowNoiseSource()
+        let noiseSource = GKPerlinNoiseSource()
         
         let noise = GKNoise(noiseSource)
         
