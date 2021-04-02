@@ -2,10 +2,15 @@ import SceneKit
 import GameplayKit
 
 class TerrainGenerator: NSObject {
-    private(set) var width: Int32
-    private(set) var depth: Int32
-    private(set) var scaleFactor: SCNVector3
-    private(set) var geometry: SCNGeometry?
+    private var width: Int32
+    private var depth: Int32
+    private var scaleFactor: SCNVector3
+
+    private var parentNode = SCNNode()
+    private var treeNodes: [SCNNode] = []
+    private lazy var terrainGeometry: SCNGeometry = {
+       return generateGeometry()
+    }()
 
     init(_ width: Int, _ depth: Int, _ scaleFactor: SCNVector3) {
         self.width = Int32(width)
@@ -19,9 +24,11 @@ class TerrainGenerator: NSObject {
     }
 
     func terrain() -> SCNNode {
-        let geometry = generateGeometry()
-        geometry.firstMaterial?.diffuse.contents = UIColor.green
-        return SCNNode(geometry: geometry)
+        terrainGeometry.firstMaterial?.diffuse.contents = UIColor.green
+        let terrainNode = SCNNode(geometry: terrainGeometry)
+
+        parentNode.addChildNode(terrainNode)
+        return parentNode
     }
 
     private func generateGeometry() -> SCNGeometry {
@@ -37,6 +44,7 @@ class TerrainGenerator: NSObject {
                 // swiftlint:disable identifier_name
                 let h = noiseMap.value(at: vector_int2(w, d))
                 let vertex = SCNVector3(Float(w), h, Float(d)) * scaleFactor
+                generateTreeAt(vertex)
                 vertices.append(vertex)
 
                 if d < depth - 1 && w < width - 1 {
@@ -62,5 +70,20 @@ class TerrainGenerator: NSObject {
         let mapOrigin = vector_double2(0, 0)
         let mapSampleCount = vector_int2(width, depth)
         return GKNoiseMap(noise, size: mapSize, origin: mapOrigin, sampleCount: mapSampleCount, seamless: true)
+    }
+
+    private func shouldGenerateTreeFor(_ value: Float) -> Bool {
+        return (Int(floor(value * 100)) % 4) == 0
+    }
+
+    private func generateTreeAt(_ position: SCNVector3) {
+        guard shouldGenerateTreeFor(position.y) else { return }
+        let node = try! SCNNode.load(from: Bool.random() ? "tree.scn" : "tree-2.scn")
+        node.scaleToFit(height: scaleFactor.y * 1.2)
+        node.position = position
+        print(node.position)
+
+        treeNodes.append(node)
+        parentNode.addChildNode(node)
     }
 }
