@@ -30,8 +30,11 @@ class TerrainGenerator: NSObject {
         var indices: [Int32] = []
         var counter: Int32 = 0
 
+        // swiftlint:disable identifier_name
         for w in 0..<width {
+            // swiftlint:disable identifier_name
             for d in 0..<depth {
+                // swiftlint:disable identifier_name
                 let h = noiseMap.value(at: vector_int2(w, d))
                 let vertex = SCNVector3(Float(w), h, Float(d)) * scaleFactor
                 vertices.append(vertex)
