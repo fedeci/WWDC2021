@@ -1,7 +1,7 @@
 import SceneKit
 import GameplayKit
 
-class TerrainGenerator: NSObject {
+final class TerrainGenerator: NSObject {
     private var width: Int32
     private var depth: Int32
     private var scaleFactor: SCNVector3

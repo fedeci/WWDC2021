@@ -1,6 +1,6 @@
 import SceneKit
 
-public class MainScene: SCNScene {
+public final class MainScene: SCNScene {
     private let scale = SCNVector3(20, 35, 20)
     private var terrainGenerator: TerrainGenerator!
     private var sun: Sun!
@@ -24,12 +24,12 @@ public class MainScene: SCNScene {
 
         rootNode.addChildNode(node)
     }
-    
+
     private func setupSun() {
         sun = Sun(initialPosition: SCNVector3(60, 300, 60))
         rootNode.addChildNode(sun.lightNode)
     }
-    
+
     private func setupMainCharacter() {
         mainCharacter = Character(height: scale.y * 0.3, initialPosition: SCNVector3(60, 10, 60))
         rootNode.addChildNode(mainCharacter.characterNode)

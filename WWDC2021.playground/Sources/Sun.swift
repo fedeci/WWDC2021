@@ -1,6 +1,6 @@
 import SceneKit
 
-class Sun: NSObject {
+final class Sun: NSObject {
     private(set) var lightNode: SCNNode!
     private var timer: Timer!
     private var timerCounter = 0
@@ -9,7 +9,7 @@ class Sun: NSObject {
         get { lightNode.light!.temperature }
         set { lightNode.light!.temperature = newValue }
     }
-    
+
     private(set) var intensity: CGFloat {
         get { lightNode.light!.intensity }
         set { lightNode.light!.intensity = newValue }
