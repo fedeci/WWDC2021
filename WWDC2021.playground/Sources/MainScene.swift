@@ -1,7 +1,7 @@
 import SceneKit
 
 public final class MainScene: SCNScene {
-    private let scale = SCNVector3(20, 35, 20)
+    static let scale = SCNVector3(20, 35, 20)
     private var terrainGenerator: TerrainGenerator!
     private var sun: Sun!
     private var mainCharacter: Character!
@@ -11,6 +11,7 @@ public final class MainScene: SCNScene {
         setupTerrain()
         setupMainCharacter()
         setupSun()
+        setupMusic()
     }
 
     required init?(coder: NSCoder) {
@@ -18,7 +19,7 @@ public final class MainScene: SCNScene {
     }
 
     private func setupTerrain() {
-        terrainGenerator = TerrainGenerator(20, 20, scale)
+        terrainGenerator = TerrainGenerator(20, 20, MainScene.scale)
         let node = terrainGenerator.terrain()
         node.position = SCNVector3(0, 0, 0)
 
@@ -31,7 +32,11 @@ public final class MainScene: SCNScene {
     }
 
     private func setupMainCharacter() {
-        mainCharacter = Character(height: scale.y * 0.3, initialPosition: SCNVector3(60, 10, 60))
+        mainCharacter = Character(height: MainScene.scale.y * 0.3, initialPosition: SCNVector3(60, 10, 60))
         rootNode.addChildNode(mainCharacter.characterNode)
+    }
+    
+    private func setupMusic() {
+        AudioManager.shared.playChillMusic()
     }
 }
