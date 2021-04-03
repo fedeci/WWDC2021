@@ -15,18 +15,18 @@ class Sun: NSObject {
         set { lightNode.light!.intensity = newValue }
     }
 
-    init(initialPosition: SCNVector3) {
+    init(initialPosition position: SCNVector3) {
         super.init()
-        setupLightNode(initialPosition: initialPosition)
+        setupLightNode(initialPosition: position)
         setupTimer()
     }
 
-    private func setupLightNode(initialPosition: SCNVector3) {
+    private func setupLightNode(initialPosition position: SCNVector3) {
         lightNode = SCNNode()
         let light = SCNLight()
         light.type = .omni
 
-        lightNode.position = initialPosition
+        lightNode.position = position
         lightNode.light = light
     }
 

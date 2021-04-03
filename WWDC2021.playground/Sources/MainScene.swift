@@ -1,11 +1,10 @@
 import SceneKit
 
-private let SCALE = SCNVector3(20, 35, 20)
-
 public class MainScene: SCNScene {
-    private let generator = TerrainGenerator(20, 20, SCALE)
-    private var timerCounter = 0
+    private let scale = SCNVector3(20, 35, 20)
+    private var terrainGenerator: TerrainGenerator!
     private var sun: Sun!
+    private var mainCharacter: Character!
 
     public override init() {
         super.init()
@@ -19,7 +18,8 @@ public class MainScene: SCNScene {
     }
 
     private func setupTerrain() {
-        let node = generator.terrain()
+        terrainGenerator = TerrainGenerator(20, 20, scale)
+        let node = terrainGenerator.terrain()
         node.position = SCNVector3(0, 0, 0)
 
         rootNode.addChildNode(node)
@@ -31,9 +31,7 @@ public class MainScene: SCNScene {
     }
     
     private func setupMainCharacter() {
-        let node = try! SCNNode.load(from: "character.scn")
-        node.scaleToFit(height: SCALE.y * 0.3)
-        node.position = SCNVector3(60, 10, 60)
-        rootNode.addChildNode(node)
+        mainCharacter = Character(height: scale.y * 0.3, initialPosition: SCNVector3(60, 10, 60))
+        rootNode.addChildNode(mainCharacter.characterNode)
     }
 }
