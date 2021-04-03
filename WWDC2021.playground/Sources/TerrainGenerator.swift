@@ -81,7 +81,6 @@ class TerrainGenerator: NSObject {
         let node = try! SCNNode.load(from: Bool.random() ? "tree.scn" : "tree-2.scn")
         node.scaleToFit(height: scaleFactor.y * 1.2)
         node.position = position
-        print(node.position)
 
         treeNodes.append(node)
         parentNode.addChildNode(node)
