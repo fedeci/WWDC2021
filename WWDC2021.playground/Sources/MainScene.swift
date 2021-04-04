@@ -5,11 +5,13 @@ public final class MainScene: SCNScene {
     private var terrainGenerator: TerrainGenerator!
     private var sun: Sun!
     private var mainCharacter: Character!
+    private var diffusedLightNode: SCNNode!
 
     public override init() {
         super.init()
         setupTerrain()
         setupMainCharacter()
+        setupDiffusedLight()
         setupSun()
         setupMusic()
     }
@@ -24,6 +26,16 @@ public final class MainScene: SCNScene {
         node.position = SCNVector3(0, 0, 0)
 
         rootNode.addChildNode(node)
+    }
+
+    private func setupDiffusedLight() {
+        diffusedLightNode = SCNNode()
+        let light = SCNLight()
+        light.type = .ambient
+        light.intensity = 200
+        diffusedLightNode.light = light
+
+        rootNode.addChildNode(diffusedLightNode)
     }
 
     private func setupSun() {
