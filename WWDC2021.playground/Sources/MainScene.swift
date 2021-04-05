@@ -1,19 +1,28 @@
 import SceneKit
 
+enum MainSceneError: Error {
+    case noView
+}
+
 public final class MainScene: SCNScene {
     static let scale = SCNVector3(20, 35, 20)
+
+    weak var view: SCNView?
     private var terrainGenerator: TerrainGenerator!
     private var sun: Sun!
     private var mainCharacter: Character!
     private var diffusedLightNode: SCNNode!
+    private var overlay: OverlayScene!
 
-    public override init() {
+    public init(view: SCNView) {
         super.init()
+        self.view = view
         setupTerrain()
         setupMainCharacter()
         setupDiffusedLight()
         setupSun()
         setupMusic()
+        try! setupOverlay()
     }
 
     required init?(coder: NSCoder) {
@@ -51,4 +60,14 @@ public final class MainScene: SCNScene {
     private func setupMusic() {
         AudioManager.shared.playChillMusic()
     }
+    
+    private func setupOverlay() throws {
+        guard let view = view else { throw MainSceneError.noView }
+        overlay = OverlayScene(size: view.bounds.size, delegate: self)
+        view.overlaySKScene = overlay
+    }
+}
+
+extension MainScene: JoystickDelegate {
+    func positionChanged(_ joystick: Joystick, distance: CGFloat, alpha: CGFloat) { }
 }
