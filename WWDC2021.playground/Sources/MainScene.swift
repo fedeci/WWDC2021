@@ -8,7 +8,7 @@ public final class MainScene: SCNScene {
     static let scale = SCNVector3(20, 35, 20)
 
     weak var view: SCNView?
-    private var terrainGenerator: TerrainGenerator!
+    private var terrain: SCNNode!
     private var sun: Sun!
     private var mainCharacter: Character!
     private var diffusedLightNode: SCNNode!
@@ -23,6 +23,7 @@ public final class MainScene: SCNScene {
         setupSun()
         setupMusic()
         try! setupOverlay()
+        setupPhysics()
     }
 
     required init?(coder: NSCoder) {
@@ -30,11 +31,11 @@ public final class MainScene: SCNScene {
     }
 
     private func setupTerrain() {
-        terrainGenerator = TerrainGenerator(20, 20, MainScene.scale)
-        let node = terrainGenerator.terrain()
-        node.position = SCNVector3(0, 0, 0)
+        let terrainGenerator = TerrainGenerator(20, 20, MainScene.scale)
+        terrain = terrainGenerator.generate()
+        terrain.position = SCNVector3(0, 0, 0)
 
-        rootNode.addChildNode(node)
+        rootNode.addChildNode(terrain)
     }
 
     private func setupDiffusedLight() {
@@ -53,8 +54,8 @@ public final class MainScene: SCNScene {
     }
 
     private func setupMainCharacter() {
-        mainCharacter = Character(height: MainScene.scale.y * 0.3, initialPosition: SCNVector3(60, 10, 60))
-        rootNode.addChildNode(mainCharacter.characterNode)
+        mainCharacter = Character(initialPosition: SCNVector3(60, 0, 60), physicsWorld: physicsWorld)
+        rootNode.addChildNode(mainCharacter.rootNode)
     }
     
     private func setupMusic() {
@@ -66,8 +67,26 @@ public final class MainScene: SCNScene {
         overlay = OverlayScene(size: view.bounds.size, delegate: self)
         view.overlaySKScene = overlay
     }
+    
+    private func setupPhysics() {
+        physicsWorld.contactDelegate = self
+    }
 }
 
 extension MainScene: JoystickDelegate {
-    func positionChanged(_ joystick: Joystick, distance: CGFloat, alpha: CGFloat) { }
+    func positionChanged(_ joystick: Joystick, distance: CGFloat, alpha: CGFloat) {
+        mainCharacter.updateDirection(distance, alpha: alpha)
+    }
+}
+
+extension MainScene: SCNPhysicsContactDelegate {
+    public func physicsWorld(_ world: SCNPhysicsWorld, didBegin contact: SCNPhysicsContact) {
+        // this will be useful for planting trees
+    }
+}
+
+extension MainScene: SCNSceneRendererDelegate {
+    public func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
+        mainCharacter.update(atTime: time, with: renderer)
+    }
 }

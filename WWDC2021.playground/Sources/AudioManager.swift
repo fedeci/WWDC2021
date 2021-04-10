@@ -9,7 +9,7 @@ final class AudioManager: NSObject {
 
     private var backgroundPlayer: AVAudioPlayer?
     private var _volume: Float = 0.2
-    
+
     var volume: Float {
         get { return _volume}
         set {
@@ -17,10 +17,10 @@ final class AudioManager: NSObject {
             _volume = newValue
         }
     }
-    
+
     func playMusic(from filename: String) throws {
         guard let url = Bundle.main.url(forResource: filename, withExtension: nil) else { throw AudioManagerError.missingFile(filename) }
-        
+
         backgroundPlayer = try AVAudioPlayer(contentsOf: url)
         backgroundPlayer?.stop()
         backgroundPlayer?.volume = volume

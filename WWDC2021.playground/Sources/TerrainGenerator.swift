@@ -23,9 +23,11 @@ final class TerrainGenerator: NSObject {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func terrain() -> SCNNode {
+    func generate() -> SCNNode {
         terrainGeometry.firstMaterial?.diffuse.contents = UIColor.green
+        terrainGeometry.firstMaterial?.isDoubleSided = true
         let terrainNode = SCNNode(geometry: terrainGeometry)
+        generateTerrainPhysicsBody(node: terrainNode)
 
         parentNode.addChildNode(terrainNode)
         return parentNode
@@ -42,7 +44,7 @@ final class TerrainGenerator: NSObject {
             // swiftlint:disable identifier_name
             for d in 0..<depth {
                 // swiftlint:disable identifier_name
-                let h = noiseMap.value(at: vector_int2(w, d))
+                let h = abs(noiseMap.value(at: vector_int2(w, d)))
                 let vertex = SCNVector3(Float(w), h, Float(d)) * scaleFactor
                 generateTreeAt(vertex)
                 vertices.append(vertex)
@@ -78,11 +80,24 @@ final class TerrainGenerator: NSObject {
 
     private func generateTreeAt(_ position: SCNVector3) {
         guard shouldGenerateTreeFor(position.y) else { return }
+
         let node = try! SCNNode.load(from: Bool.random() ? "tree.scn" : "tree-2.scn")
         node.scaleToFit(height: scaleFactor.y * 1.2)
         node.position = position
-
+        generateTreePhysicsBody(node: node)
+        
         treeNodes.append(node)
         parentNode.addChildNode(node)
+    }
+    
+    private func generateTerrainPhysicsBody(node: SCNNode) {
+        let shape = SCNPhysicsShape(node: node, options: [.type: SCNPhysicsShape.ShapeType.concavePolyhedron])
+        node.physicsBody = SCNPhysicsBody(type: .static, shape: shape)
+        node.physicsBody?.categoryBitMask = BitMask.world.rawValue
+    }
+    
+    private func generateTreePhysicsBody(node: SCNNode) {
+        node.physicsBody = SCNPhysicsBody(type: .static, shape: nil)
+        node.physicsBody?.categoryBitMask = BitMask.tree.rawValue
     }
 }
