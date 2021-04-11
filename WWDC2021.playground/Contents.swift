@@ -9,4 +9,3 @@ sceneView.delegate = scene
 PlaygroundPage.current.liveView = sceneView
 
 sceneView.showsStatistics = true
-sceneView.allowsCameraControl = true

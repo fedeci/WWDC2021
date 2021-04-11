@@ -13,6 +13,7 @@ public final class MainScene: SCNScene {
     private var mainCharacter: Character!
     private var diffusedLightNode: SCNNode!
     private var overlay: OverlayScene!
+    private var cameraNode: SCNNode!
 
     public init(view: SCNView) {
         super.init()
@@ -24,6 +25,7 @@ public final class MainScene: SCNScene {
         setupMusic()
         try! setupOverlay()
         setupPhysics()
+        setupCameraNode()
     }
 
     required init?(coder: NSCoder) {
@@ -70,6 +72,31 @@ public final class MainScene: SCNScene {
     
     private func setupPhysics() {
         physicsWorld.contactDelegate = self
+    }
+    
+    private func setupCameraNode() {
+        cameraNode = SCNNode()
+        let camera = SCNCamera()
+        camera.zFar = 1000
+        camera.fieldOfView = 90
+        cameraNode.camera = camera
+        
+        let lookAtConstraint = SCNLookAtConstraint(target: mainCharacter.rootNode)
+        lookAtConstraint.isGimbalLockEnabled = true
+        let distanceConstraint = SCNDistanceConstraint(target: mainCharacter.rootNode)
+        distanceConstraint.minimumDistance = 50
+        distanceConstraint.maximumDistance = 70
+        let transformConstraint = SCNTransformConstraint.positionConstraint(inWorldSpace: true) { [weak self] _, position -> SCNVector3 in
+            guard let self = self else { return position }
+            var newPosition = position
+            newPosition.y = self.mainCharacter.rootNode.boundingBox.max.y + 30
+            return newPosition
+        }
+        
+        cameraNode.constraints = [lookAtConstraint, distanceConstraint, transformConstraint]
+        rootNode.addChildNode(cameraNode)
+
+        view?.pointOfView = cameraNode
     }
 }
 
