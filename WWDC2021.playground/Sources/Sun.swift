@@ -16,6 +16,7 @@ final class Sun: NSObject {
         didSet {
             if timerCounter >= 1440 {
                 timerCounter = 0 // reset timerCounter on new day
+                return
             }
 
             let isPM = timerCounter > 12 * 60
@@ -31,8 +32,6 @@ final class Sun: NSObject {
             } else {
                 intensity = midnightIntensity + (CGFloat(24 * 60 - timerCounter) * 1.125)
             }
-            
-            print(intensity, temperature)
         }
     }
 

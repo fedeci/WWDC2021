@@ -34,7 +34,7 @@ final class Character: NSObject {
         direction = SCNVector3(distance * cos(alpha), 0, distance * sin(alpha))
     }
     
-    func update(atTime time: TimeInterval, with renderer: SCNSceneRenderer) {
+    func update() {
         let oldPosition = rootNode.position
         
         let newPosition = direction + oldPosition

@@ -8,7 +8,8 @@ public final class MainScene: SCNScene {
     static let scale = SCNVector3(20, 35, 20)
 
     weak var view: SCNView?
-    private var terrain: SCNNode!
+    private var worldManager: WorldManager!
+    private var world: SCNNode!
     private var sun: Sun!
     private var mainCharacter: Character!
     private var diffusedLightNode: SCNNode!
@@ -18,7 +19,7 @@ public final class MainScene: SCNScene {
     public init(view: SCNView) {
         super.init()
         self.view = view
-        setupTerrain()
+        setupWorld()
         setupMainCharacter()
         setupDiffusedLight()
         setupSun()
@@ -32,12 +33,12 @@ public final class MainScene: SCNScene {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setupTerrain() {
-        let terrainGenerator = TerrainGenerator(20, 20, MainScene.scale)
-        terrain = terrainGenerator.generate()
-        terrain.position = SCNVector3(0, 0, 0)
+    private func setupWorld() {
+        worldManager = WorldManager(20, 20, MainScene.scale)
+        world = worldManager.generateWorldNode()
+        world.position = SCNVector3(0, 0, 0)
 
-        rootNode.addChildNode(terrain)
+        rootNode.addChildNode(world)
     }
 
     private func setupDiffusedLight() {
@@ -114,6 +115,7 @@ extension MainScene: SCNPhysicsContactDelegate {
 
 extension MainScene: SCNSceneRendererDelegate {
     public func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
-        mainCharacter.update(atTime: time, with: renderer)
+        mainCharacter.update()
+        worldManager.update(renderer, at: time)
     }
 }

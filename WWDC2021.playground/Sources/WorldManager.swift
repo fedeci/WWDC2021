@@ -1,29 +1,29 @@
 import SceneKit
 import GameplayKit
 
-final class TerrainGenerator: NSObject {
-    private var width: Int32
-    private var depth: Int32
-    private var scaleFactor: SCNVector3
+final class WorldManager: NSObject {
+    private var width: Int32!
+    private var depth: Int32!
+    private var scaleFactor: SCNVector3!
 
     private var parentNode = SCNNode()
     private var treeNodes: [SCNNode] = []
     private lazy var terrainGeometry: SCNGeometry = {
-       return generateGeometry()
+       return generateTerrainGeometry()
     }()
 
     init(_ width: Int, _ depth: Int, _ scaleFactor: SCNVector3) {
+        super.init()
         self.width = Int32(width)
         self.depth = Int32(depth)
         self.scaleFactor = scaleFactor
-        super.init()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func generate() -> SCNNode {
+    func generateWorldNode() -> SCNNode {
         terrainGeometry.firstMaterial?.diffuse.contents = UIColor.green
         terrainGeometry.firstMaterial?.isDoubleSided = true
         let terrainNode = SCNNode(geometry: terrainGeometry)
@@ -33,7 +33,8 @@ final class TerrainGenerator: NSObject {
         return parentNode
     }
 
-    private func generateGeometry() -> SCNGeometry {
+    /// This generates also static trees (treeNodes) and growable trees (growableTreeNodes)
+    private func generateTerrainGeometry() -> SCNGeometry {
         let noiseMap = generateNoiseMap()
         var vertices: [SCNVector3] = []
         var indices: [Int32] = []
@@ -74,6 +75,7 @@ final class TerrainGenerator: NSObject {
         return GKNoiseMap(noise, size: mapSize, origin: mapOrigin, sampleCount: mapSampleCount, seamless: true)
     }
 
+    // MARK: - Static trees
     private func shouldGenerateTreeFor(_ value: Float) -> Bool {
         return (Int(floor(value * 100)) % 4) == 0
     }
@@ -90,6 +92,7 @@ final class TerrainGenerator: NSObject {
         parentNode.addChildNode(node)
     }
     
+    // MARK: - Physics
     private func generateTerrainPhysicsBody(node: SCNNode) {
         let shape = SCNPhysicsShape(node: node, options: [.type: SCNPhysicsShape.ShapeType.concavePolyhedron])
         node.physicsBody = SCNPhysicsBody(type: .static, shape: shape)
@@ -99,5 +102,10 @@ final class TerrainGenerator: NSObject {
     private func generateTreePhysicsBody(node: SCNNode) {
         node.physicsBody = SCNPhysicsBody(type: .static, shape: nil)
         node.physicsBody?.categoryBitMask = BitMask.tree.rawValue
+    }
+    
+    // MARK: - Render loop
+    func update(_ renderer: SCNSceneRenderer, at time: TimeInterval) {
+        
     }
 }
