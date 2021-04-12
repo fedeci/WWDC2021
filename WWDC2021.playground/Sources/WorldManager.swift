@@ -7,7 +7,9 @@ final class WorldManager: NSObject {
     private var scaleFactor: SCNVector3!
 
     private var parentNode = SCNNode()
-    private var treeNodes: [SCNNode] = []
+    private var staticTreeNodes: [SCNNode] = []
+    private var growableTrees: [GrowableTree] = []
+
     private lazy var terrainGeometry: SCNGeometry = {
        return generateTerrainGeometry()
     }()
@@ -75,20 +77,31 @@ final class WorldManager: NSObject {
         return GKNoiseMap(noise, size: mapSize, origin: mapOrigin, sampleCount: mapSampleCount, seamless: true)
     }
 
-    // MARK: - Static trees
+    // MARK: - Trees
     private func shouldGenerateTreeFor(_ value: Float) -> Bool {
         return (Int(floor(value * 100)) % 4) == 0
     }
 
     private func generateTreeAt(_ position: SCNVector3) {
         guard shouldGenerateTreeFor(position.y) else { return }
-
+        Bool.random()
+            ? generateStaticTreeAt(position)
+            : generateGrowableTreeAt(position)
+    }
+    
+    private func generateGrowableTreeAt(_ position: SCNVector3) {
+        let growableTree = GrowableTree(at: position)
+        growableTrees.append(growableTree)
+        parentNode.addChildNode(growableTree.node)
+    }
+    
+    private func generateStaticTreeAt(_ position: SCNVector3) {
         let node = try! SCNNode.load(from: Bool.random() ? "tree.scn" : "tree-2.scn")
         node.scaleToFit(height: scaleFactor.y * 1.2)
         node.position = position
         generateTreePhysicsBody(node: node)
         
-        treeNodes.append(node)
+        staticTreeNodes.append(node)
         parentNode.addChildNode(node)
     }
     
@@ -106,6 +119,6 @@ final class WorldManager: NSObject {
     
     // MARK: - Render loop
     func update(_ renderer: SCNSceneRenderer, at time: TimeInterval) {
-        
+        growableTrees.forEach({ $0.update(renderer, at: time) })
     }
 }
