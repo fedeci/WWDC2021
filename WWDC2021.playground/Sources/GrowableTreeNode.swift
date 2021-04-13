@@ -1,12 +1,12 @@
 import SceneKit
 
 private struct Nodes {
-    static let empty = try! SCNNode.load(from: "insert")
-    static let sprout = try! SCNNode.load(from: "insert")
-    static let tree = try! SCNNode.load(from: "insert")
+    static let empty = try! SCNNode.load(from: "tree.scn")
+    static let sprout = try! SCNNode.load(from: "tree.scn")
+    static let tree = try! SCNNode.load(from: "tree.scn")
 }
 
-final class GrowableTree: NSObject {
+final class GrowableTreeNode: SCNNode {
     enum State {
         case empty
         case sprout(creation: TimeInterval)
@@ -21,15 +21,13 @@ final class GrowableTree: NSObject {
             }
         }
     }
+    private var node: SCNNode!
 
-    private var position: SCNVector3!
-    private(set) var node: SCNNode!
-
+    // TODO: augment physicsbody height
     private var _currentState: State = .empty {
         didSet {
             switch currentState {
             case .empty:
-                print(Nodes.empty)
                 node = Nodes.empty.flattenedClone()
                 break
             case .sprout:
@@ -39,7 +37,6 @@ final class GrowableTree: NSObject {
                 node = Nodes.tree.flattenedClone()
                 break
             }
-            node.position = position
             
             updatePhysicsBody()
         }
@@ -54,6 +51,11 @@ final class GrowableTree: NSObject {
         super.init()
         self.position = position
         self.currentState = .empty
+        addChildNode(node) // This is safe to call because we are setting node with currentState
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     func contactWithPlayer(_ contact: SCNPhysicsContact) {
@@ -74,9 +76,18 @@ final class GrowableTree: NSObject {
     
     private func updatePhysicsBody() {
         switch currentState {
-        case .empty, .sprout:
+        case .empty:
+            let box = SCNBox(width: 10, height: 5, length: 10, chamferRadius: 0)
+            let physicsShape = SCNPhysicsShape(geometry: box, options: nil)
+            physicsBody = SCNPhysicsBody(type: .static, shape: physicsShape)
+            physicsBody?.categoryBitMask = BitMask.GrowableTree.empty.rawValue
+            break
+        case .sprout:
+            physicsBody = nil
             break
         case .tree:
+            physicsBody = SCNPhysicsBody(type: .static, shape: nil)
+            physicsBody?.categoryBitMask = BitMask.GrowableTree.tree.rawValue
             break
         }
     }

@@ -8,7 +8,7 @@ final class WorldManager: NSObject {
 
     private var parentNode = SCNNode()
     private var staticTreeNodes: [SCNNode] = []
-    private var growableTrees: [GrowableTree] = []
+    private var growableTreeNodes: [GrowableTreeNode] = []
 
     private lazy var terrainGeometry: SCNGeometry = {
        return generateTerrainGeometry()
@@ -79,7 +79,7 @@ final class WorldManager: NSObject {
 
     // MARK: - Trees
     private func shouldGenerateTreeFor(_ value: Float) -> Bool {
-        return (Int(floor(value * 100)) % 4) == 0
+        return (Int(floor(value * 100)) % 7) == 0
     }
 
     private func generateTreeAt(_ position: SCNVector3) {
@@ -90,9 +90,9 @@ final class WorldManager: NSObject {
     }
     
     private func generateGrowableTreeAt(_ position: SCNVector3) {
-        let growableTree = GrowableTree(at: position)
-        growableTrees.append(growableTree)
-        parentNode.addChildNode(growableTree.node)
+        let growableTree = GrowableTreeNode(at: position)
+        growableTreeNodes.append(growableTree)
+        parentNode.addChildNode(growableTree)
     }
     
     private func generateStaticTreeAt(_ position: SCNVector3) {
@@ -114,11 +114,11 @@ final class WorldManager: NSObject {
     
     private func generateTreePhysicsBody(node: SCNNode) {
         node.physicsBody = SCNPhysicsBody(type: .static, shape: nil)
-        node.physicsBody?.categoryBitMask = BitMask.tree.rawValue
+        node.physicsBody?.categoryBitMask = BitMask.staticTree.rawValue
     }
     
     // MARK: - Render loop
     func update(_ renderer: SCNSceneRenderer, at time: TimeInterval) {
-        growableTrees.forEach({ $0.update(renderer, at: time) })
+        growableTreeNodes.forEach({ $0.update(renderer, at: time) })
     }
 }

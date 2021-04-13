@@ -28,6 +28,7 @@ final class Character: NSObject {
     private func setupPhysics() {
         characterNode.physicsBody = SCNPhysicsBody(type: .kinematic, shape: nil)
         characterNode.physicsBody?.categoryBitMask = BitMask.character.rawValue
+        characterNode.physicsBody?.contactTestBitMask = BitMask.GrowableTree.empty.rawValue
     }
     
     func updateDirection(_ distance: CGFloat, alpha: CGFloat) {
