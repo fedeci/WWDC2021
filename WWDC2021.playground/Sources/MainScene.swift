@@ -15,6 +15,9 @@ public final class MainScene: SCNScene {
     private var diffusedLightNode: SCNNode!
     private var overlay: OverlayScene!
     private var cameraNode: SCNNode!
+    
+    private var nPhysicsContacts: UInt = 0
+    private var lastPhysicsContact: SCNPhysicsContact?
 
     public init(view: SCNView) {
         super.init()
@@ -107,9 +110,36 @@ extension MainScene: JoystickDelegate {
     }
 }
 
+extension MainScene: ButtonDelegate {
+    func receivedTap(_ button: Button) {
+        if button == overlay.plantSproutButton,
+           let tree = lastPhysicsContact?.nodeA as? GrowableTreeNode {
+            tree.shouldUpdate = true
+            overlay.plantSproutButton.isEnabled = false
+        }
+    }
+}
+
 extension MainScene: SCNPhysicsContactDelegate {
     public func physicsWorld(_ world: SCNPhysicsWorld, didBegin contact: SCNPhysicsContact) {
-        // this will be useful for planting trees
+        if contact.nodeA.physicsBody?.categoryBitMask == BitMask.character.rawValue ||
+            contact.nodeB.physicsBody?.categoryBitMask == BitMask.character.rawValue {
+            nPhysicsContacts += 1
+            overlay.plantSproutButton.isEnabled = true
+            lastPhysicsContact = contact
+        }
+    }
+    
+    public func physicsWorld(_ world: SCNPhysicsWorld, didEnd contact: SCNPhysicsContact) {
+        if contact.nodeA.physicsBody?.categoryBitMask == BitMask.character.rawValue ||
+            contact.nodeB.physicsBody?.categoryBitMask == BitMask.character.rawValue {
+            nPhysicsContacts -= 1
+        }
+        // Everything that enters a closed shape must exit from it. Like happens in the Gauss theorem
+        if nPhysicsContacts == 0 {
+            overlay.plantSproutButton.isEnabled = false
+            lastPhysicsContact = nil
+        }
     }
 }
 

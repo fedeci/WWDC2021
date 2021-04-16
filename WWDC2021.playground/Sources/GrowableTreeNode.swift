@@ -21,6 +21,8 @@ final class GrowableTreeNode: SCNNode {
             }
         }
     }
+    
+    var shouldUpdate = false
     private var node: SCNNode!
 
     // TODO: augment physicsbody height
@@ -58,11 +60,14 @@ final class GrowableTreeNode: SCNNode {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func contactWithPlayer(_ contact: SCNPhysicsContact) {
-    }
-    
     func update(_ renderer: SCNSceneRenderer, at time: TimeInterval) {
         switch currentState {
+        case .empty:
+            if shouldUpdate {
+                currentState = .sprout(creation: time)
+                shouldUpdate = false
+            }
+            break
         case .sprout(let creation):
             let delta = time - creation
             if delta.seconds >= 15 {
@@ -77,8 +82,7 @@ final class GrowableTreeNode: SCNNode {
     private func updatePhysicsBody() {
         switch currentState {
         case .empty:
-            let box = SCNBox(width: 10, height: 5, length: 10, chamferRadius: 0)
-            let physicsShape = SCNPhysicsShape(geometry: box, options: nil)
+            let physicsShape = SCNPhysicsShape(geometry: SCNSphere(radius: 8), options: nil)
             physicsBody = SCNPhysicsBody(type: .static, shape: physicsShape)
             physicsBody?.categoryBitMask = BitMask.GrowableTree.empty.rawValue
             break
