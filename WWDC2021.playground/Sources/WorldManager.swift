@@ -90,7 +90,7 @@ final class WorldManager: NSObject {
     }
     
     private func generateGrowableTreeAt(_ position: SCNVector3) {
-        let growableTree = GrowableTreeNode(at: position)
+        let growableTree = GrowableTreeNode(at: position, scale: scaleFactor)
         growableTreeNodes.append(growableTree)
         parentNode.addChildNode(growableTree)
     }

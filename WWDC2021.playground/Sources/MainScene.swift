@@ -48,7 +48,7 @@ public final class MainScene: SCNScene {
         diffusedLightNode = SCNNode()
         let light = SCNLight()
         light.type = .ambient
-        light.intensity = 200
+        light.intensity = 400
         diffusedLightNode.light = light
 
         rootNode.addChildNode(diffusedLightNode)

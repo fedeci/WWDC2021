@@ -1,11 +1,5 @@
 import SceneKit
 
-private struct Nodes {
-    static let empty = try! SCNNode.load(from: "tree.scn")
-    static let sprout = try! SCNNode.load(from: "tree.scn")
-    static let tree = try! SCNNode.load(from: "tree.scn")
-}
-
 final class GrowableTreeNode: SCNNode {
     enum State {
         case empty
@@ -23,22 +17,25 @@ final class GrowableTreeNode: SCNNode {
     }
     
     var shouldUpdate = false
-    private var node: SCNNode!
+    private var node: SCNNode?
+    private var worldScale: SCNVector3!
 
-    // TODO: augment physicsbody height
     private var _currentState: State = .empty {
         didSet {
             switch currentState {
             case .empty:
-                node = Nodes.empty.flattenedClone()
+                node = (try! SCNNode.load(from: "sprout.scn", node: "ground")).scaleToFit(height: worldScale.y * 0.1)
                 break
             case .sprout:
-                node = Nodes.sprout.flattenedClone()
+                let plantNode = try! SCNNode.load(from: "sprout.scn", node: "plant")
+                node?.addChildNode(plantNode)
                 break
             case .tree:
-                node = Nodes.tree.flattenedClone()
+                node?.removeFromParentNode()
+                node = try! SCNNode.load(from: "tree.scn").scaleToFit(height: worldScale.y * 1.2)
                 break
             }
+            addChildNode(node!)
             
             updatePhysicsBody()
         }
@@ -49,11 +46,11 @@ final class GrowableTreeNode: SCNNode {
         set { _currentState = newValue }
     }
     
-    init(at position: SCNVector3) {
+    init(at position: SCNVector3, scale: SCNVector3) {
         super.init()
+        worldScale = scale
         self.position = position
         self.currentState = .empty
-        addChildNode(node) // This is safe to call because we are setting node with currentState
     }
     
     required init?(coder: NSCoder) {

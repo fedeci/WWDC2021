@@ -11,14 +11,16 @@ extension SCNNode {
             throw LoadingError.sceneError(filename)
         }
         let childName = name ?? filename.removingFilenameExtension()
-        if let node = scene.rootNode.childNode(withName: childName, recursively: false) {
+        if let node = scene.rootNode.childNode(withName: childName, recursively: true) {
             return node
         }
         throw LoadingError.childNodeNotFound(childName)
     }
 
-    func scaleToFit(height: Float) {
+    @discardableResult
+    func scaleToFit(height: Float) -> Self {
         let ratio = height / boundingBox.max.y
         scale = SCNVector3(ratio, ratio, ratio)
+        return self
     }
 }
