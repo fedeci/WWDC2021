@@ -16,7 +16,14 @@ public final class MainScene: SCNScene {
     private var overlay: OverlayScene!
     private var cameraNode: SCNNode!
     
-    private var nPhysicsContacts: UInt = 0
+    private var nPhysicsContacts: UInt = 0 {
+        didSet {
+            if nPhysicsContacts == 0 {
+                overlay.plantSproutButton.isEnabled = false
+                lastPhysicsContact = nil
+            }
+        }
+    }
     private var lastPhysicsContact: SCNPhysicsContact?
 
     public init(view: SCNView) {
@@ -115,7 +122,7 @@ extension MainScene: ButtonDelegate {
         if button == overlay.plantSproutButton,
            let tree = lastPhysicsContact?.nodeA as? GrowableTreeNode {
             tree.shouldUpdate = true
-            overlay.plantSproutButton.isEnabled = false
+            nPhysicsContacts = 0
         }
     }
 }
@@ -133,12 +140,8 @@ extension MainScene: SCNPhysicsContactDelegate {
     public func physicsWorld(_ world: SCNPhysicsWorld, didEnd contact: SCNPhysicsContact) {
         if contact.nodeA.physicsBody?.categoryBitMask == BitMask.character.rawValue ||
             contact.nodeB.physicsBody?.categoryBitMask == BitMask.character.rawValue {
+            // Everything that enters a closed shape must exit from it. Like happens in the Gauss theorem
             nPhysicsContacts -= 1
-        }
-        // Everything that enters a closed shape must exit from it. Like happens in the Gauss theorem
-        if nPhysicsContacts == 0 {
-            overlay.plantSproutButton.isEnabled = false
-            lastPhysicsContact = nil
         }
     }
 }
