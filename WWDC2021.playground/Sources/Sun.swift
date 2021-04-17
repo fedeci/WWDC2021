@@ -19,15 +19,15 @@ final class Sun: NSObject {
                 return
             }
 
-            let isPM = timerCounter > 12 * 60
-            if (timerCounter > 0 && timerCounter <= 6 * 60) || (timerCounter > 12 * 60 && timerCounter <= 18 * 60) {
-                temperature = 6500 - CGFloat(isPM ? timerCounter - 12 * 60 : timerCounter) * 12.5
+            let isPM = timerCounter > .midday
+            if (timerCounter > .midnight && timerCounter <= .dawn) || (timerCounter > .midday && timerCounter <= .sunset) {
+                temperature = 6500 - CGFloat(isPM ? timerCounter - Int.midday : timerCounter) * 12.5
             } else {
-                temperature = 2000 + CGFloat(isPM ? timerCounter - 18 * 60 : timerCounter - 6 * 60) * 12.5
+                temperature = 2000 + CGFloat(isPM ? timerCounter - Int.sunset : timerCounter - Int.dawn) * 12.5
             }
 
             let midnightIntensity: CGFloat = 200
-            if timerCounter <= 12 * 60 {
+            if timerCounter <= .midday {
                 intensity = midnightIntensity + CGFloat(timerCounter) * 1.125
             } else {
                 intensity = midnightIntensity + (CGFloat(24 * 60 - timerCounter) * 1.125)
