@@ -2,14 +2,14 @@ import SpriteKit
 
 final class Button: SKSpriteNode {
     weak var delegate: ButtonDelegate?
-    
+
     var isEnabled: Bool = true {
         didSet {
             alpha = isEnabled ? 1.0 : 0.7
             isUserInteractionEnabled = isEnabled
         }
     }
-    
+
     init(_ size: CGSize, imageNamed name: String) {
         let texture = SKTexture(imageNamed: name)
         super.init(texture: texture, color: .clear, size: size)

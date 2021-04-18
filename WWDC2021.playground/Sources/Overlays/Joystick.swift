@@ -5,7 +5,7 @@ final class Joystick: SKNode {
         let outerStrokeColor: UIColor
         let handleColor: UIColor
         let activeHandleColor: UIColor
-        
+
         init(
             outerStrokeColor: UIColor = .white,
             handleColor: UIColor = .white,
@@ -16,7 +16,7 @@ final class Joystick: SKNode {
             self.activeHandleColor = activeHandleColor
         }
     }
-    
+
     weak var delegate: JoystickDelegate?
 
     private var config: Config!
@@ -66,7 +66,7 @@ final class Joystick: SKNode {
                 handleNode.position = CGPoint(x: location.x, y: location.y)
             }
 
-            let distance = round((sqrt(pow(handleNode.position.x, 2) + pow(handleNode.position.y, 2)) / radius ) * 100) / 100
+            let distance = round((sqrt(pow(handleNode.position.x, 2) + pow(handleNode.position.y, 2)) / radius) * 100) / 100
             delegate?.positionDidChange(self, distance: distance, alpha: alpha)
         }
     }

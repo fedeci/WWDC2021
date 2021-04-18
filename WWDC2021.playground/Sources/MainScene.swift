@@ -15,7 +15,7 @@ public final class MainScene: SCNScene {
     private var diffusedLightNode: SCNNode!
     private var overlay: OverlayScene!
     private var cameraNode: SCNNode!
-    
+
     private var nPhysicsContacts: UInt = 0 {
         didSet {
             if nPhysicsContacts == 0 {
@@ -72,17 +72,17 @@ public final class MainScene: SCNScene {
         mainCharacter = Character(initialPosition: SCNVector3(60, 0, 60), physicsWorld: physicsWorld)
         rootNode.addChildNode(mainCharacter.rootNode)
     }
-    
+
     private func setupMusic() {
         AudioManager.shared.playChillMusic()
     }
-    
+
     private func setupOverlay() throws {
         guard let view = view else { throw MainSceneError.noView }
         overlay = OverlayScene(size: view.bounds.size, delegate: self, growableTrees: worldManager.growableTrees)
         view.overlaySKScene = overlay
     }
-    
+
     private func setupPhysics() {
         physicsWorld.contactDelegate = self
     }
@@ -120,7 +120,7 @@ extension MainScene: SCNPhysicsContactDelegate {
             lastPhysicsContact = contact
         }
     }
-    
+
     public func physicsWorld(_ world: SCNPhysicsWorld, didEnd contact: SCNPhysicsContact) {
         if contact.nodeA.physicsBody?.categoryBitMask == BitMask.character.rawValue ||
             contact.nodeB.physicsBody?.categoryBitMask == BitMask.character.rawValue {

@@ -15,7 +15,10 @@ final class AudioManager: NSObject {
     }
 
     func playMusic(from filename: String) throws {
-        guard let url = Bundle.main.url(forResource: filename, withExtension: nil) else { throw AudioManagerError.missingFile(filename) }
+        guard let url = Bundle.main.url(
+                forResource: filename,
+                withExtension: nil
+        ) else { throw AudioManagerError.missingFile(filename) }
 
         backgroundPlayer = try AVAudioPlayer(contentsOf: url)
         backgroundPlayer?.stop()

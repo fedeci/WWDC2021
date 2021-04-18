@@ -9,11 +9,11 @@ final class WorldManager: NSObject {
     private var parentNode = SCNNode()
     private var staticTreeNodes: [SCNNode] = []
     private var growableTreeNodes: [GrowableTreeNode] = []
-    
+
     var grownTrees: Int {
         return growableTreeNodes.filter({ $0.currentState == .tree }).count
     }
-    
+
     var growableTrees: Int {
         return growableTreeNodes.count
     }
@@ -96,35 +96,35 @@ final class WorldManager: NSObject {
             ? generateStaticTreeAt(position)
             : generateGrowableTreeAt(position)
     }
-    
+
     private func generateGrowableTreeAt(_ position: SCNVector3) {
         let growableTree = GrowableTreeNode(at: position, scale: scaleFactor)
         growableTreeNodes.append(growableTree)
         parentNode.addChildNode(growableTree)
     }
-    
+
     private func generateStaticTreeAt(_ position: SCNVector3) {
         let node = try! SCNNode.load(from: Bool.random() ? "tree.scn" : "tree-2.scn")
         node.scaleToFit(height: scaleFactor.y * 1.2)
         node.position = position
         generateTreePhysicsBody(node: node)
-        
+
         staticTreeNodes.append(node)
         parentNode.addChildNode(node)
     }
-    
+
     // MARK: - Physics
     private func generateTerrainPhysicsBody(node: SCNNode) {
         let shape = SCNPhysicsShape(node: node, options: [.type: SCNPhysicsShape.ShapeType.concavePolyhedron])
         node.physicsBody = SCNPhysicsBody(type: .static, shape: shape)
         node.physicsBody?.categoryBitMask = BitMask.world.rawValue
     }
-    
+
     private func generateTreePhysicsBody(node: SCNNode) {
         node.physicsBody = SCNPhysicsBody(type: .static, shape: nil)
         node.physicsBody?.categoryBitMask = BitMask.staticTree.rawValue
     }
-    
+
     // MARK: - Render loop
     func update(_ renderer: SCNSceneRenderer, at time: TimeInterval) {
         growableTreeNodes.forEach({ $0.update(renderer, at: time) })

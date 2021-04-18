@@ -4,7 +4,7 @@ import Combine
 final class Sun: NSObject {
     private(set) var lightNode: SCNNode!
     private var cancellable: Cancellable?
-    
+
     /**
      * 1 second (real time) -> 10 minutes
      * - 6AM: 2000K / 605 i
@@ -50,7 +50,7 @@ final class Sun: NSObject {
         setupLightNode(initialPosition: position)
         setupTimer()
     }
-    
+
     deinit {
         cancellable?.cancel()
     }
