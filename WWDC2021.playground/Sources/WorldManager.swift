@@ -9,6 +9,14 @@ final class WorldManager: NSObject {
     private var parentNode = SCNNode()
     private var staticTreeNodes: [SCNNode] = []
     private var growableTreeNodes: [GrowableTreeNode] = []
+    
+    var grownTrees: Int {
+        return growableTreeNodes.filter({ $0.currentState == .tree }).count
+    }
+    
+    var growableTrees: Int {
+        return growableTreeNodes.count
+    }
 
     private lazy var terrainGeometry: SCNGeometry = {
        return generateTerrainGeometry()
@@ -79,12 +87,12 @@ final class WorldManager: NSObject {
 
     // MARK: - Trees
     private func shouldGenerateTreeFor(_ value: Float) -> Bool {
-        return (Int(floor(value * 100)) % 7) == 0
+        return Int(floor(value * 100)) % 7 == 0
     }
 
     private func generateTreeAt(_ position: SCNVector3) {
         guard shouldGenerateTreeFor(position.y) else { return }
-        Bool.random()
+        Int.random(in: 0..<10) < 3
             ? generateStaticTreeAt(position)
             : generateGrowableTreeAt(position)
     }

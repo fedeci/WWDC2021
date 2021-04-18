@@ -1,3 +1,9 @@
+// Instructions:
+// - Use the left joystick to move the camera and set the direction of the character
+// - Use the right joystick to move the character
+// - Plant a sprout on the brown spots of soil using the button in the middle
+// - Plant trees in all the available spots to complete the game
+
 import PlaygroundSupport
 import SceneKit
 

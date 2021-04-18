@@ -50,6 +50,7 @@ public final class MainScene: SCNScene {
         world.position = SCNVector3(0, 0, 0)
 
         rootNode.addChildNode(world)
+        view?.prepare([try! SCNNode.load(from: "sprout.scn", node: "plant")], completionHandler: nil) // preload sprout node
     }
 
     private func setupDiffusedLight() {
@@ -78,7 +79,7 @@ public final class MainScene: SCNScene {
     
     private func setupOverlay() throws {
         guard let view = view else { throw MainSceneError.noView }
-        overlay = OverlayScene(size: view.bounds.size, delegate: self)
+        overlay = OverlayScene(size: view.bounds.size, delegate: self, growableTrees: worldManager.growableTrees)
         view.overlaySKScene = overlay
     }
     
@@ -89,10 +90,10 @@ public final class MainScene: SCNScene {
 
 // MARK: - Overlay
 extension MainScene: JoystickDelegate {
-    func positionChanged(_ joystick: Joystick, distance: CGFloat, alpha: CGFloat) {
+    func positionDidChange(_ joystick: Joystick, distance: CGFloat, alpha: CGFloat) {
         if joystick == overlay.positionJoystick {
             mainCharacter.updateDirection(distance, alpha: alpha)
-        } else {
+        } else if joystick == overlay.cameraJoystick {
             let xDistanceFromCenter = cos(alpha) * distance * 0.01
             mainCharacter.directionAngle += xDistanceFromCenter
         }
@@ -100,7 +101,7 @@ extension MainScene: JoystickDelegate {
 }
 
 extension MainScene: ButtonDelegate {
-    func receivedTap(_ button: Button) {
+    func didReceiveTap(_ button: Button) {
         if button == overlay.plantSproutButton,
            let tree = lastPhysicsContact?.nodeA as? GrowableTreeNode {
             tree.shouldUpdate = true
@@ -134,5 +135,6 @@ extension MainScene: SCNSceneRendererDelegate {
     public func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
         mainCharacter.update()
         worldManager.update(renderer, at: time)
+        overlay.update(worldManager.grownTrees)
     }
 }

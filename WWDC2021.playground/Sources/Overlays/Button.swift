@@ -14,8 +14,15 @@ final class Button: SKSpriteNode {
         let configuration = UIImage.SymbolConfiguration(pointSize: 64, weight: .bold)
         let pngData = UIImage(systemName: name, withConfiguration: configuration)!.withTintColor(color).pngData()
         let texture = SKTexture(image: UIImage(data: pngData!)!)
-
         super.init(texture: texture, color: .clear, size: size)
+
+        setupNode()
+    }
+    
+    init(_ size: CGSize, imageNamed name: String) {
+        let texture = SKTexture(imageNamed: name)
+        super.init(texture: texture, color: .clear, size: size)
+
         setupNode()
     }
 
@@ -30,6 +37,6 @@ final class Button: SKSpriteNode {
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
-        delegate?.receivedTap(self)
+        delegate?.didReceiveTap(self)
     }
 }

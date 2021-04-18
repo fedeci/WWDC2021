@@ -1,5 +1,5 @@
 import Foundation
 
 protocol ButtonDelegate: class {
-    func receivedTap(_ button: Button)
+    func didReceiveTap(_ button: Button)
 }

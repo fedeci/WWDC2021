@@ -1,7 +1,7 @@
 import SceneKit
 
 final class GrowableTreeNode: SCNNode {
-    enum State {
+    enum State: Equatable {
         case empty
         case sprout(creation: TimeInterval)
         case tree

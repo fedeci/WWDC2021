@@ -67,7 +67,7 @@ final class Joystick: SKNode {
             }
 
             let distance = round((sqrt(pow(handleNode.position.x, 2) + pow(handleNode.position.y, 2)) / radius ) * 100) / 100
-            delegate?.positionChanged(self, distance: distance, alpha: alpha)
+            delegate?.positionDidChange(self, distance: distance, alpha: alpha)
         }
     }
 
@@ -75,6 +75,6 @@ final class Joystick: SKNode {
         super.touchesEnded(touches, with: event)
         handleNode.fillColor = config.handleColor
         handleNode.position = CGPoint(x: 0, y: 0)
-        delegate?.positionChanged(self, distance: 0, alpha: 0)
+        delegate?.positionDidChange(self, distance: 0, alpha: 0)
     }
 }
