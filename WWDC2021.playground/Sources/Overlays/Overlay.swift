@@ -16,8 +16,8 @@ final class OverlayScene: SKScene {
     private var grownTrees: Int = 0 {
         didSet {
             grownTreesLabelNode.text = "\(grownTrees)/\(growableTrees ?? 0)"
-            if grownTrees == growableTrees {
-                // play confetti
+            if grownTrees == growableTrees && grownTrees != oldValue {
+                runConfetti()
             }
         }
     }
@@ -79,6 +79,39 @@ final class OverlayScene: SKScene {
         grownTreesLabelNode.fontColor = UIColor(hex: 0x000000)
         
         addChild(grownTreesLabelNode)
+    }
+    
+    private func runConfetti() {
+        let colors: [UIColor] = [.systemRed, .systemOrange, .systemYellow, .systemGreen, .systemTeal, .systemBlue, .systemPurple]
+        let emitterLayer = CAEmitterLayer()
+        emitterLayer.emitterSize = CGSize(width: size.width, height: 1)
+        emitterLayer.position = CGPoint(x: size.width / 2, y: 0)
+        emitterLayer.emitterShape = .line
+        var emitterCells: [CAEmitterCell] = []
+        for color in colors {
+            let cell = CAEmitterCell()
+            cell.contents = UIImage(named: "confetti")?.cgImage
+            cell.color = color.cgColor
+            cell.birthRate = 15
+            cell.lifetime = 12
+            cell.velocity = 220
+            cell.velocityRange = 40
+            cell.xAcceleration = 10
+            cell.yAcceleration = 70
+            cell.emissionLongitude = .pi
+            cell.emissionRange = .pi
+            cell.spin = 4
+            cell.spinRange = 2
+            cell.scale = 0.4
+            emitterCells.append(cell)
+        }
+        
+        emitterLayer.emitterCells = emitterCells
+        view?.layer.addSublayer(emitterLayer)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(5)) {
+            emitterLayer.removeFromSuperlayer()
+        }
     }
     
     func update(_ grownTrees: Int) {
