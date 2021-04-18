@@ -92,10 +92,10 @@ public final class MainScene: SCNScene {
 extension MainScene: JoystickDelegate {
     func positionDidChange(_ joystick: Joystick, distance: CGFloat, alpha: CGFloat) {
         if joystick == overlay.positionJoystick {
-            mainCharacter.updateDirection(distance, alpha: alpha)
+            mainCharacter.updateJoystickDirection(distance, alpha: alpha)
         } else if joystick == overlay.cameraJoystick {
-            let xDistanceFromCenter = cos(alpha) * distance * 0.01
-            mainCharacter.directionAngle += xDistanceFromCenter
+            let xDistanceFromCenter = cos(alpha) * distance
+            mainCharacter.directionAngle = xDistanceFromCenter * 0.01
         }
     }
 }

@@ -9,12 +9,7 @@ final class Character: NSObject {
 
     private(set) var cameraNode: SCNNode!
     private var lookAtNode: SCNNode!
-    var directionAngle: CGFloat = .pi / 2 {
-        didSet {
-            let action = SCNAction.rotateTo(x: 0, y: directionAngle, z: 0, duration: 0.2, usesShortestUnitArc: true)
-            rootNode.runAction(action)
-        }
-    }
+    var directionAngle: CGFloat = 0
 
     init(
         initialPosition position: SCNVector3,
@@ -27,7 +22,7 @@ final class Character: NSObject {
     }
     
     private func setupRootNode(position: SCNVector3) {
-        directionAngle = .pi / 2
+        rootNode.rotation = SCNVector4(0, Float.pi / 2, 0, 0)
         rootNode.position = position
     }
 
@@ -63,11 +58,20 @@ final class Character: NSObject {
         characterNode.physicsBody?.contactTestBitMask = BitMask.GrowableTree.empty.rawValue
     }
     
-    func updateDirection(_ distance: CGFloat, alpha: CGFloat) {
-        joystickDirection = SCNVector3(distance * sin(alpha + directionAngle - .pi / 2), 0, distance * cos(alpha + directionAngle - .pi / 2))
+    func updateJoystickDirection(_ distance: CGFloat, alpha: CGFloat) {
+        joystickDirection = SCNVector3(
+            distance * sin(alpha + CGFloat(rootNode.rotation.w) - .pi / 2),
+            0,
+            distance * cos(alpha + CGFloat(rootNode.rotation.w) - .pi / 2)
+        )
     }
     
     func update() {
+        // Update node rotation
+        let action = SCNAction.rotateBy(x: 0, y: directionAngle, z: 0, duration: 0.2)
+        rootNode.runAction(action)
+
+        // Update node position
         let oldPosition = rootNode.position
         
         let newPosition = joystickDirection + oldPosition
