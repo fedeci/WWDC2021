@@ -8,13 +8,9 @@ final class AudioManager: NSObject {
     static let shared = AudioManager()
 
     private var backgroundPlayer: AVAudioPlayer?
-    private var _volume: Float = 0.2
-
-    var volume: Float {
-        get { return _volume}
-        set {
-            backgroundPlayer?.setVolume(newValue, fadeDuration: 0)
-            _volume = newValue
+    var volume: Float = 0.2 {
+        didSet {
+            backgroundPlayer?.setVolume(volume, fadeDuration: 0)
         }
     }
 

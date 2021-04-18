@@ -9,15 +9,6 @@ final class Button: SKSpriteNode {
             isUserInteractionEnabled = isEnabled
         }
     }
-
-    init(_ size: CGSize, sfSymbol name: String, color: UIColor) {
-        let configuration = UIImage.SymbolConfiguration(pointSize: 64, weight: .bold)
-        let pngData = UIImage(systemName: name, withConfiguration: configuration)!.withTintColor(color).pngData()
-        let texture = SKTexture(image: UIImage(data: pngData!)!)
-        super.init(texture: texture, color: .clear, size: size)
-
-        setupNode()
-    }
     
     init(_ size: CGSize, imageNamed name: String) {
         let texture = SKTexture(imageNamed: name)
