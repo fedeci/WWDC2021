@@ -60,9 +60,9 @@ final class Character: NSObject {
 
     func updateJoystickDirection(_ distance: CGFloat, alpha: CGFloat) {
         joystickDirection = SCNVector3(
-            distance * sin(alpha + CGFloat(rootNode.rotation.w) - .pi / 2),
+            distance * sin(alpha + CGFloat(rootNode.rotation.w * rootNode.rotation.y) - .pi / 2),
             0,
-            distance * cos(alpha + CGFloat(rootNode.rotation.w) - .pi / 2)
+            distance * cos(alpha + CGFloat(rootNode.rotation.w * rootNode.rotation.y) - .pi / 2)
         )
     }
 

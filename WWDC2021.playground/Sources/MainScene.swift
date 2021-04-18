@@ -50,7 +50,6 @@ public final class MainScene: SCNScene {
         world.position = SCNVector3(0, 0, 0)
 
         rootNode.addChildNode(world)
-        view?.prepare([try! SCNNode.load(from: "sprout.scn", node: "plant")], completionHandler: nil) // preload sprout node
     }
 
     private func setupDiffusedLight() {
@@ -95,7 +94,7 @@ extension MainScene: JoystickDelegate {
             mainCharacter.updateJoystickDirection(distance, alpha: alpha)
         } else if joystick == overlay.cameraJoystick {
             let xDistanceFromCenter = cos(alpha) * distance
-            mainCharacter.directionAngle = xDistanceFromCenter * 0.01
+            mainCharacter.directionAngle = xDistanceFromCenter * 0.03
         }
     }
 }

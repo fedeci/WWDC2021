@@ -74,7 +74,7 @@ final class GrowableTreeNode: SCNNode {
     private func updatePhysicsBody() {
         switch currentState {
         case .empty:
-            let physicsShape = SCNPhysicsShape(geometry: SCNSphere(radius: 8), options: nil)
+            let physicsShape = SCNPhysicsShape(geometry: SCNSphere(radius: 5), options: nil)
             physicsBody = SCNPhysicsBody(type: .static, shape: physicsShape)
             physicsBody?.categoryBitMask = BitMask.GrowableTree.empty.rawValue
         case .sprout:
