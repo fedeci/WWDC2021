@@ -1,7 +1,6 @@
 import SpriteKit
 
 final class Joystick: SKNode {
-    
     struct Config {
         let outerStrokeColor: UIColor
         let handleColor: UIColor

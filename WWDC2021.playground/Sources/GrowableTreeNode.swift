@@ -32,7 +32,7 @@ final class GrowableTreeNode: SCNNode {
                 break
             case .tree:
                 node?.removeFromParentNode()
-                node = try! SCNNode.load(from: "tree.scn").scaleToFit(height: worldScale.y * 1.2)
+                node = try! SCNNode.load(from: Bool.random() ? "tree.scn" : "tree-2.scn").scaleToFit(height: worldScale.y * 1.2)
                 break
             }
             addChildNode(node!)

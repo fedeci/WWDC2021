@@ -3,7 +3,7 @@ import SpriteKit
 final class Button: SKSpriteNode {
     weak var delegate: ButtonDelegate?
     
-    var isEnabled: Bool! {
+    var isEnabled: Bool = true {
         didSet {
             alpha = isEnabled ? 1.0 : 0.7
             isUserInteractionEnabled = isEnabled

@@ -36,7 +36,8 @@ public final class MainScene: SCNScene {
         setupMusic()
         try! setupOverlay()
         setupPhysics()
-        setupCameraNode()
+
+        view.pointOfView = mainCharacter.cameraNode
     }
 
     required init?(coder: NSCoder) {
@@ -84,36 +85,17 @@ public final class MainScene: SCNScene {
     private func setupPhysics() {
         physicsWorld.contactDelegate = self
     }
-    
-    private func setupCameraNode() {
-        cameraNode = SCNNode()
-        let camera = SCNCamera()
-        camera.zFar = 1000
-        camera.fieldOfView = 90
-        cameraNode.camera = camera
-        
-        let lookAtConstraint = SCNLookAtConstraint(target: mainCharacter.rootNode)
-        lookAtConstraint.isGimbalLockEnabled = true
-        let distanceConstraint = SCNDistanceConstraint(target: mainCharacter.rootNode)
-        distanceConstraint.minimumDistance = 50
-        distanceConstraint.maximumDistance = 70
-        let transformConstraint = SCNTransformConstraint.positionConstraint(inWorldSpace: true) { [weak self] _, position -> SCNVector3 in
-            guard let self = self else { return position }
-            var newPosition = position
-            newPosition.y = self.mainCharacter.rootNode.boundingBox.max.y + 30
-            return newPosition
-        }
-        
-        cameraNode.constraints = [lookAtConstraint, distanceConstraint, transformConstraint]
-        rootNode.addChildNode(cameraNode)
-
-        view?.pointOfView = cameraNode
-    }
 }
 
+// MARK: - Overlay
 extension MainScene: JoystickDelegate {
     func positionChanged(_ joystick: Joystick, distance: CGFloat, alpha: CGFloat) {
-        mainCharacter.updateDirection(distance, alpha: alpha)
+        if joystick == overlay.positionJoystick {
+            mainCharacter.updateDirection(distance, alpha: alpha)
+        } else {
+            let xDistanceFromCenter = cos(alpha) * distance * 0.01
+            mainCharacter.directionAngle += xDistanceFromCenter
+        }
     }
 }
 
@@ -127,6 +109,7 @@ extension MainScene: ButtonDelegate {
     }
 }
 
+// MARK: - ContactDelegate
 extension MainScene: SCNPhysicsContactDelegate {
     public func physicsWorld(_ world: SCNPhysicsWorld, didBegin contact: SCNPhysicsContact) {
         if contact.nodeA.physicsBody?.categoryBitMask == BitMask.character.rawValue ||
@@ -146,6 +129,7 @@ extension MainScene: SCNPhysicsContactDelegate {
     }
 }
 
+// MARK: - Render loop
 extension MainScene: SCNSceneRendererDelegate {
     public func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
         mainCharacter.update()
